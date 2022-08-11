@@ -1,10 +1,12 @@
 from pathlib import Path
 import subprocess
+import sys
 video_file_list = []
 saved_file_list = []
 extension_list = [".mkv",".avi",".mp4",".webm"]
 folder_path = "G:\My Videos"
-save_path = "video_list.txt"
+save_path = "C:/Program Files/qBittorrent/video_list.txt"
+is_update_only = False
 #qBittorrent --> OPTIONS --> DOWNLOADS --> LAUNCH EXTERNAL PROGRAM:
 #C:\Python37\python.exe "G:\My Videos\auto_cast_convert.py"
 
@@ -34,7 +36,7 @@ def show_file_list(a_list, a_msg):
 def write_save(a_list):
     with open(save_path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(a_list))
-        print("UPDATED SAVE LIST.")
+        print("VIDEO LIST UPDATED.")
 
 #append 1 element to the save
 def append_save(a_elem):
@@ -64,6 +66,10 @@ def convert_list(a_list):
         append_save(str(elem))
 
 #RUN
+for elem in sys.argv[1:]:
+    if elem == "--update":
+        is_update_only = True
+        break
 video_file_list = fetch_list()
 video_file_list = trim_list(video_file_list)
 try:
@@ -74,7 +80,7 @@ except:
 saved_file_list = read_save()
 difference_list = compare(saved_file_list, video_file_list)
 show_file_list(difference_list, "NEWLY VIDEO(S): ")
-convert_list(difference_list)
+if not is_update_only:
+    convert_list(difference_list)
 write_save(video_file_list)
-
 
